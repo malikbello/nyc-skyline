@@ -34,11 +34,6 @@ export default function TopNav() {
           </div>
         </a>
 
-        <p className={`hidden max-w-md text-center text-xs sm:block ${t.textMuted}`}>
-          A class notebook gave me one static chart. I wanted to watch a city grow &mdash; so I
-          joined a million real buildings to their tax records and put a play button on it.
-        </p>
-
         <button
           onClick={toggleTheme}
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition ${t.border} ${t.cardBg} ${t.cardBgHover} ${t.text}`}

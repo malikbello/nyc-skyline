@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Map, useControl, NavigationControl } from "react-map-gl/maplibre";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { MVTLayer } from "@deck.gl/geo-layers";
+import { DataFilterExtension, type DataFilterExtensionProps } from "@deck.gl/extensions";
 import { LightingEffect, AmbientLight, DirectionalLight, type Effect } from "@deck.gl/core";
 import type { Feature, Geometry } from "geojson";
 import { Play, Pause, RotateCcw } from "lucide-react";
@@ -11,19 +12,24 @@ import { colorForDecade, gradientCss, MIN_DECADE, MAX_DECADE } from "@/lib/decad
 import { useTheme, themeClasses } from "@/lib/theme";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-// Shadow-casting sun light is the single biggest lever for making extruded
-// buildings read as a real city rather than flat colored blocks -- deck.gl's
-// default lighting has no shadows at all.
-const ambientLight = new AmbientLight({ color: [255, 255, 255], intensity: 1.25 });
+// Plain ambient + directional light for real diffuse shading, without the
+// shadow-map render pass -- shadow-casting was the main cause of the lag at
+// ~1M buildings, so it's dropped in favor of staying smooth.
+const ambientLight = new AmbientLight({ color: [255, 255, 255], intensity: 1.3 });
 const sunLight = new DirectionalLight({
   color: [255, 250, 240],
-  intensity: 1.4,
+  intensity: 1.3,
   direction: [-2.5, -3.5, -1.5],
-  _shadow: true,
 });
 const lightingEffect = new LightingEffect({ ambientLight, sunLight });
-lightingEffect.shadowColor = [0, 0, 0, 0.35];
 const mapEffects: Effect[] = [lightingEffect];
+
+const dataFilter = new DataFilterExtension({ filterSize: 1 });
+
+// Everything with no known year is treated as always-present rather than
+// hidden -- we don't know when it was built, so it shouldn't be made to
+// vanish from an arbitrary point in the timeline.
+const UNDATED_SENTINEL = MIN_DECADE - 10;
 
 type BuildingProps = {
   doitt_id?: string;
@@ -39,9 +45,12 @@ type BuildingProps = {
 
 type HoverState = { x: number; y: number; object: Feature<Geometry, BuildingProps> } | null;
 
-const PLAY_STEP_MS = 220; // fast enough to feel like a "growth" animation, not a slog
+const PLAY_STEP_MS = 260; // moderately fast timelapse pace: ~23 decades in ~6s
 
-function DeckGLOverlay(props: { layers: MVTLayer<BuildingProps>[]; effects: Effect[] }) {
+type BuildingFeature = Feature<Geometry, BuildingProps>;
+type BuildingLayer = MVTLayer<BuildingProps, DataFilterExtensionProps<BuildingFeature>>;
+
+function DeckGLOverlay(props: { layers: BuildingLayer[]; effects: Effect[] }) {
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
   overlay.setProps(props);
   return null;
@@ -82,21 +91,18 @@ export default function SkylineMap() {
   };
 
   const layers = [
-    new MVTLayer<BuildingProps>({
+    new MVTLayer<BuildingProps, DataFilterExtensionProps<BuildingFeature>>({
       id: "nyc-buildings",
       data: "/api/tiles/{z}/{x}/{y}",
       minZoom: 9,
       maxZoom: 16,
       extruded: true,
-      getElevation: (f) => {
-        const decade = f.properties.decade;
-        if (decade != null && decade > maxDecade) return 0;
-        return f.properties.height_m ?? 3;
-      },
+      // Static per-feature accessors -- computed once and cached by deck.gl,
+      // never re-run as the slider/play animation moves. Visibility over time
+      // is handled entirely on the GPU below, not by recomputing these.
+      getElevation: (f) => f.properties.height_m ?? 3,
       getFillColor: (f) => {
-        const decade = f.properties.decade;
-        if (decade != null && decade > maxDecade) return [0, 0, 0, 0];
-        const [r, g, b] = colorForDecade(decade);
+        const [r, g, b] = colorForDecade(f.properties.decade);
         return [r, g, b, 225];
       },
       pickable: true,
@@ -106,14 +112,13 @@ export default function SkylineMap() {
             ? { x: info.x, y: info.y, object: info.object as Feature<Geometry, BuildingProps> }
             : null
         ),
-      updateTriggers: {
-        getElevation: [maxDecade],
-        getFillColor: [maxDecade],
-      },
-      transitions: {
-        getElevation: PLAY_STEP_MS * 0.9,
-        getFillColor: PLAY_STEP_MS * 0.9,
-      },
+      // GPU-side filtering: only `filterRange`/`filterSoftRange` (two numbers)
+      // update per animation tick, not per-feature color/height -- this is
+      // what actually keeps the timelapse smooth at ~1M buildings.
+      extensions: [dataFilter],
+      getFilterValue: (f) => f.properties.decade ?? UNDATED_SENTINEL,
+      filterRange: [UNDATED_SENTINEL, maxDecade],
+      filterSoftRange: [maxDecade - 10, maxDecade],
       material: {
         ambient: 0.4,
         diffuse: 0.85,

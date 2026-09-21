@@ -7,7 +7,6 @@ import DecadeBarChart from "@/components/DecadeBarChart";
 import RegionalGrowthChart from "@/components/RegionalGrowthChart";
 import HeightByDecadeChart from "@/components/HeightByDecadeChart";
 import BoroughBreakdown from "@/components/BoroughBreakdown";
-import WhyIBuiltThis from "@/components/WhyIBuiltThis";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import { SkylineSilhouette } from "@/components/SkylineSilhouette";
@@ -51,9 +50,6 @@ export default function Home() {
         </p>
       </section>
 
-      <div className={`border-t ${t.border}`}>
-        <WhyIBuiltThis />
-      </div>
       <div className={`border-t ${t.border}`}>
         <StatsCards />
       </div>
