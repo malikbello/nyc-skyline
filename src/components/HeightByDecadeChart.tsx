@@ -21,7 +21,7 @@ export default function HeightByDecadeChart() {
   const { theme } = useTheme();
   const t = themeClasses[theme];
 
-  const { series, xScale, yScale } = useMemo(() => {
+  const { series, xScale, yScale, labelPositions } = useMemo(() => {
     const decades = Array.from(new Set(appStats.growth_by_decade.map((d) => d.decade))).sort(
       (a, b) => a - b
     );
@@ -48,7 +48,27 @@ export default function HeightByDecadeChart() {
       .domain([0, maxHeight * 1.1])
       .range([HEIGHT - MARGIN.bottom, MARGIN.top]);
 
-    return { series, xScale, yScale };
+    // End-of-line labels: Brooklyn/Bronx/Queens/Staten Island all sit within
+    // a few meters of each other, so placing each label at its exact y
+    // collides them. Greedily push overlapping labels apart, top to bottom.
+    const MIN_LABEL_GAP = 16;
+    const labelPositions = series
+      .map((s) => {
+        const last = s.points[s.points.length - 1];
+        return last ? { borough: s.borough, x: xScale(last.decade), y: yScale(last.avgHeight) } : null;
+      })
+      .filter((p): p is { borough: string; x: number; y: number } => p !== null)
+      .sort((a, b) => a.y - b.y);
+
+    for (let i = 1; i < labelPositions.length; i++) {
+      const prev = labelPositions[i - 1];
+      const cur = labelPositions[i];
+      if (cur.y - prev.y < MIN_LABEL_GAP) {
+        cur.y = prev.y + MIN_LABEL_GAP;
+      }
+    }
+
+    return { series, xScale, yScale, labelPositions };
   }, []);
 
   const lineGen = line<{ decade: number; avgHeight: number }>()
@@ -103,22 +123,18 @@ export default function HeightByDecadeChart() {
             />
           ))}
 
-          {series.map((s) => {
-            const last = s.points[s.points.length - 1];
-            if (!last) return null;
-            return (
-              <text
-                key={s.borough}
-                x={xScale(last.decade) - 4}
-                y={yScale(last.avgHeight) - 8}
-                textAnchor="end"
-                className="text-[12px] font-medium"
-                fill={BOROUGH_COLORS[s.borough]}
-              >
-                {s.borough}
-              </text>
-            );
-          })}
+          {labelPositions.map((p) => (
+            <text
+              key={p.borough}
+              x={p.x - 4}
+              y={p.y - 8}
+              textAnchor="end"
+              className="text-[12px] font-medium"
+              fill={BOROUGH_COLORS[p.borough]}
+            >
+              {p.borough}
+            </text>
+          ))}
 
           {[1850, 1900, 1950, 2000].map((decade) => (
             <text
