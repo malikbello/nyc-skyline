@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { scaleLinear, scaleBand } from "d3-scale";
 import appStats from "@/data/appStats.json";
 import { colorForDecade } from "@/lib/decadeColor";
+import { Reveal, ChapterMark } from "./Reveal";
 import { useTheme, themeClasses } from "@/lib/theme";
 
 const WIDTH = 960;
@@ -42,13 +43,16 @@ export default function DecadeBarChart() {
   return (
     <section className={`${t.pageBg} px-6 py-20 ${t.text}`}>
       <div className="mx-auto max-w-5xl">
-        <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
-          What&apos;s still standing
-        </h2>
-        <p className="mb-10 max-w-2xl text-2xl font-semibold tracking-tight">
-          Buildings standing today, by the decade they were built. The {peak.label} alone account
-          for {peak.count.toLocaleString("en-US")} of the city&apos;s current buildings.
-        </p>
+        <Reveal>
+          <ChapterMark n="03 — Distribution" />
+          <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
+            What&apos;s still standing
+          </h2>
+          <p className="mb-10 max-w-2xl text-2xl font-semibold tracking-tight">
+            Buildings standing today, by the decade they were built. The {peak.label} alone account
+            for {peak.count.toLocaleString("en-US")} of the city&apos;s current buildings.
+          </p>
+        </Reveal>
 
         <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full overflow-visible">
           {[0.25, 0.5, 0.75, 1].map((f) => (

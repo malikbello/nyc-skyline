@@ -35,8 +35,8 @@ export default function TopNav() {
         </a>
 
         <p className={`hidden max-w-md text-center text-xs sm:block ${t.textMuted}`}>
-          Built to go past a class notebook&apos;s single chart &mdash; a real join between
-          NYC&apos;s own building records and tax data, rendered as a story you can actually play.
+          A class notebook gave me one static chart. I wanted to watch a city grow &mdash; so I
+          joined a million real buildings to their tax records and put a play button on it.
         </p>
 
         <button

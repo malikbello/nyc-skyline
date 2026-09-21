@@ -8,6 +8,7 @@ import appStats from "@/data/appStats.json";
 import { BOROUGH_COLORS, BOROUGHS } from "@/lib/boroughColors";
 import { useTheme, themeClasses } from "@/lib/theme";
 import { SkylineSilhouette } from "./SkylineSilhouette";
+import { Reveal, ChapterMark } from "./Reveal";
 
 const WIDTH = 960;
 const HEIGHT = 420;
@@ -59,13 +60,16 @@ export default function HeightByDecadeChart() {
     <section className={`relative overflow-hidden ${t.pageBg} px-6 py-20 ${t.text}`}>
       <SkylineSilhouette className={`pointer-events-none absolute inset-x-0 bottom-0 h-48 w-full ${t.silhouette}`} seed={22} />
       <div className="relative mx-auto max-w-5xl">
-        <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
-          The real skyline story
-        </h2>
-        <p className="mb-10 max-w-2xl text-2xl font-semibold tracking-tight">
-          Manhattan didn&apos;t just build more &mdash; it built up. Average building height by
-          decade, by borough.
-        </p>
+        <Reveal>
+          <ChapterMark n="05 — The insight" />
+          <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
+            The real skyline story
+          </h2>
+          <p className="mb-10 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
+            Manhattan didn&apos;t just build more &mdash; it built up. Average building height by
+            decade, by borough.
+          </p>
+        </Reveal>
 
         <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full overflow-visible">
           {[10, 20, 30, 40].map((h) => (

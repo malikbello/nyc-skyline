@@ -44,6 +44,7 @@ export function useTheme() {
 export const themeClasses = {
   light: {
     pageBg: "bg-[#fafaf9]",
+    pageBgAlt: "bg-[#f1efe9]",
     text: "text-[#111113]",
     textMuted: "text-black/50",
     textFaint: "text-black/35",
@@ -57,6 +58,7 @@ export const themeClasses = {
   },
   dark: {
     pageBg: "bg-[#05070c]",
+    pageBgAlt: "bg-[#0a0d16]",
     text: "text-white",
     textMuted: "text-white/60",
     textFaint: "text-white/40",

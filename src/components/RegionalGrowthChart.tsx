@@ -6,6 +6,7 @@ import { scaleLinear } from "d3-scale";
 import { line, curveMonotoneX } from "d3-shape";
 import appStats from "@/data/appStats.json";
 import { BOROUGH_COLORS, BOROUGHS } from "@/lib/boroughColors";
+import { Reveal, ChapterMark } from "./Reveal";
 import { useTheme, themeClasses } from "@/lib/theme";
 
 const WIDTH = 960;
@@ -54,13 +55,16 @@ export default function RegionalGrowthChart() {
   return (
     <section className={`${t.pageBg} px-6 py-20 ${t.text}`}>
       <div className="mx-auto max-w-5xl">
-        <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
-          Not every borough grew the same way
-        </h2>
-        <p className="mb-10 max-w-2xl text-2xl font-semibold tracking-tight">
-          Queens and Brooklyn built outward, decade after decade. Manhattan mostly stopped
-          adding buildings a century ago &mdash; and started building up instead.
-        </p>
+        <Reveal>
+          <ChapterMark n="04 — By region" />
+          <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
+            Not every borough grew the same way
+          </h2>
+          <p className="mb-10 max-w-2xl text-2xl font-semibold tracking-tight">
+            Queens and Brooklyn built outward, decade after decade. Manhattan mostly stopped
+            adding buildings a century ago &mdash; and started building up instead.
+          </p>
+        </Reveal>
 
         <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full overflow-visible">
           {[0.25, 0.5, 0.75, 1].map((f) => (

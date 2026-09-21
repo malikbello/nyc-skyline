@@ -6,6 +6,7 @@ import { scaleLinear } from "d3-scale";
 import { line, curveMonotoneX, area } from "d3-shape";
 import appStats from "@/data/appStats.json";
 import { SkylineSilhouette } from "./SkylineSilhouette";
+import { Reveal, ChapterMark } from "./Reveal";
 import { useTheme, themeClasses } from "@/lib/theme";
 
 const WIDTH = 960;
@@ -58,13 +59,16 @@ export default function GrowthChart() {
         seed={11}
       />
       <div className="relative mx-auto max-w-5xl">
-        <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
-          The skyline is getting taller
-        </h2>
-        <p className="mb-10 max-w-2xl text-2xl font-semibold tracking-tight">
-          From a handful of colonial-era structures to over a million buildings &mdash; New
-          York&apos;s growth, decade by decade.
-        </p>
+        <Reveal>
+          <ChapterMark n="02 — Growth" />
+          <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
+            The skyline is getting taller
+          </h2>
+          <p className="mb-10 max-w-2xl text-2xl font-semibold tracking-tight">
+            From a handful of colonial-era structures to over a million buildings &mdash; New
+            York&apos;s growth, decade by decade.
+          </p>
+        </Reveal>
 
         <motion.svg
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}

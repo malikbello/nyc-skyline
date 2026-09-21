@@ -3,6 +3,7 @@
 import { Building2, Landmark, Ruler, CalendarClock } from "lucide-react";
 import appStats from "@/data/appStats.json";
 import { SkylineSilhouette } from "./SkylineSilhouette";
+import { Reveal, ChapterMark } from "./Reveal";
 import { useTheme, themeClasses } from "@/lib/theme";
 
 function formatNumber(n: number): string {
@@ -47,23 +48,27 @@ export default function StatsCards() {
         seed={3}
       />
       <div className="relative mx-auto max-w-5xl">
-        <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
-          The city, in numbers
-        </h2>
-        <p className="mb-10 max-w-xl text-2xl font-semibold tracking-tight">
-          Every building has a story. Here&apos;s the whole city&apos;s.
-        </p>
+        <Reveal>
+          <ChapterMark n="01 — Overview" />
+          <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
+            The city, in numbers
+          </h2>
+          <p className="mb-10 max-w-xl text-2xl font-semibold tracking-tight">
+            Every building has a story. Here&apos;s the whole city&apos;s.
+          </p>
+        </Reveal>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {cards.map(({ icon: Icon, label, value, detail }) => (
-            <div
-              key={label}
-              className={`rounded-2xl border ${t.border} ${t.cardBg} p-6 backdrop-blur-sm transition ${t.borderHover} ${t.cardBgHover}`}
-            >
-              <Icon size={20} className={`mb-4 ${t.textFaint}`} />
-              <div className="mb-1 text-3xl font-semibold tabular-nums tracking-tight">{value}</div>
-              <div className={`text-sm font-medium ${t.textMuted}`}>{label}</div>
-              <div className={`mt-1 text-xs ${t.textFaint}`}>{detail}</div>
-            </div>
+          {cards.map(({ icon: Icon, label, value, detail }, i) => (
+            <Reveal key={label} delay={i * 0.08}>
+              <div
+                className={`rounded-2xl border ${t.border} ${t.cardBg} p-6 backdrop-blur-sm transition ${t.borderHover} ${t.cardBgHover}`}
+              >
+                <Icon size={20} className={`mb-4 ${t.textFaint}`} />
+                <div className="mb-1 text-3xl font-semibold tabular-nums tracking-tight">{value}</div>
+                <div className={`text-sm font-medium ${t.textMuted}`}>{label}</div>
+                <div className={`mt-1 text-xs ${t.textFaint}`}>{detail}</div>
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>
