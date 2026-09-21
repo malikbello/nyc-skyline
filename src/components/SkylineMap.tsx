@@ -4,11 +4,26 @@ import { useEffect, useRef, useState } from "react";
 import { Map, useControl, NavigationControl } from "react-map-gl/maplibre";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { MVTLayer } from "@deck.gl/geo-layers";
+import { LightingEffect, AmbientLight, DirectionalLight, type Effect } from "@deck.gl/core";
 import type { Feature, Geometry } from "geojson";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { colorForDecade, gradientCss, MIN_DECADE, MAX_DECADE } from "@/lib/decadeColor";
 import { useTheme, themeClasses } from "@/lib/theme";
 import "maplibre-gl/dist/maplibre-gl.css";
+
+// Shadow-casting sun light is the single biggest lever for making extruded
+// buildings read as a real city rather than flat colored blocks -- deck.gl's
+// default lighting has no shadows at all.
+const ambientLight = new AmbientLight({ color: [255, 255, 255], intensity: 1.25 });
+const sunLight = new DirectionalLight({
+  color: [255, 250, 240],
+  intensity: 1.4,
+  direction: [-2.5, -3.5, -1.5],
+  _shadow: true,
+});
+const lightingEffect = new LightingEffect({ ambientLight, sunLight });
+lightingEffect.shadowColor = [0, 0, 0, 0.35];
+const mapEffects: Effect[] = [lightingEffect];
 
 type BuildingProps = {
   doitt_id?: string;
@@ -26,7 +41,7 @@ type HoverState = { x: number; y: number; object: Feature<Geometry, BuildingProp
 
 const PLAY_STEP_MS = 220; // fast enough to feel like a "growth" animation, not a slog
 
-function DeckGLOverlay(props: { layers: MVTLayer<BuildingProps>[] }) {
+function DeckGLOverlay(props: { layers: MVTLayer<BuildingProps>[]; effects: Effect[] }) {
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
   overlay.setProps(props);
   return null;
@@ -100,10 +115,10 @@ export default function SkylineMap() {
         getFillColor: PLAY_STEP_MS * 0.9,
       },
       material: {
-        ambient: 0.35,
-        diffuse: 0.7,
-        shininess: 40,
-        specularColor: [80, 84, 90],
+        ambient: 0.4,
+        diffuse: 0.85,
+        shininess: 12,
+        specularColor: [40, 40, 45],
       },
     }),
   ];
@@ -111,11 +126,11 @@ export default function SkylineMap() {
   return (
     <div className={`relative h-screen w-full ${t.pageBg}`}>
       <Map
-        initialViewState={{ longitude: -73.98, latitude: 40.75, zoom: 11, pitch: 50, bearing: -12 }}
+        initialViewState={{ longitude: -73.98, latitude: 40.75, zoom: 11.5, pitch: 58, bearing: -14 }}
         mapStyle={t.basemap}
       >
         <NavigationControl position="top-right" visualizePitch />
-        <DeckGLOverlay layers={layers} />
+        <DeckGLOverlay layers={layers} effects={mapEffects} />
       </Map>
 
       {hoverInfo?.object && (

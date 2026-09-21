@@ -7,7 +7,8 @@ import DecadeBarChart from "@/components/DecadeBarChart";
 import RegionalGrowthChart from "@/components/RegionalGrowthChart";
 import HeightByDecadeChart from "@/components/HeightByDecadeChart";
 import BoroughBreakdown from "@/components/BoroughBreakdown";
-import ThemeToggle from "@/components/ThemeToggle";
+import TopNav from "@/components/TopNav";
+import Footer from "@/components/Footer";
 import { SkylineSilhouette } from "@/components/SkylineSilhouette";
 import { useTheme, themeClasses } from "@/lib/theme";
 
@@ -19,7 +20,7 @@ export default function Home() {
 
   return (
     <main className={t.pageBg}>
-      <ThemeToggle />
+      <TopNav />
 
       <section className={`relative flex h-[70vh] min-h-[480px] flex-col items-center justify-center overflow-hidden px-6 text-center ${t.text}`}>
         <SkylineSilhouette
@@ -77,6 +78,8 @@ export default function Home() {
         </div>
         <SkylineMap />
       </section>
+
+      <Footer />
     </main>
   );
 }
