@@ -5,7 +5,8 @@ import { Map, useControl, NavigationControl } from "react-map-gl/maplibre";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { MVTLayer } from "@deck.gl/geo-layers";
 import { DataFilterExtension, type DataFilterExtensionProps } from "@deck.gl/extensions";
-import { LightingEffect, AmbientLight, DirectionalLight, type Effect } from "@deck.gl/core";
+import { LightingEffect, AmbientLight, DirectionalLight, PostProcessEffect, type Effect } from "@deck.gl/core";
+import { vignette, toneMapping } from "@luma.gl/effects";
 import type { Feature, Geometry } from "geojson";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { colorForDecade, gradientCss, MIN_DECADE, MAX_DECADE } from "@/lib/decadeColor";
@@ -22,7 +23,16 @@ const sunLight = new DirectionalLight({
   direction: [-2.5, -3.5, -1.5],
 });
 const lightingEffect = new LightingEffect({ ambientLight, sunLight });
-const mapEffects: Effect[] = [lightingEffect];
+
+// Screen-space post-processing: cost scales with screen resolution, not
+// feature count, so this is safe to layer on top of ~1M buildings. A subtle
+// vignette and filmic tone-mapping is what separates a "designed" scene from
+// a raw WebGL default -- confirmed via research into how polished deck.gl/
+// MapLibre city scenes are actually built.
+const vignetteEffect = new PostProcessEffect(vignette, { radius: 0.6, amount: 0.35 });
+const toneMappingEffect = new PostProcessEffect(toneMapping, { exposure: 1.1, maximumLuminance: 1.2 });
+
+const mapEffects: Effect[] = [lightingEffect, vignetteEffect, toneMappingEffect];
 
 const dataFilter = new DataFilterExtension({ filterSize: 1 });
 
@@ -97,14 +107,24 @@ export default function SkylineMap() {
       minZoom: 9,
       maxZoom: 16,
       extruded: true,
-      // Static per-feature accessors -- computed once and cached by deck.gl,
-      // never re-run as the slider/play animation moves. Visibility over time
-      // is handled entirely on the GPU below, not by recomputing these.
-      getElevation: (f) => f.properties.height_m ?? 3,
+      // getFillColor is static (cached by deck.gl, never re-run during
+      // animation). getElevation genuinely does depend on maxDecade -- this
+      // is the maintainer-validated pattern for animated deck.gl elevation:
+      // keep `data` untouched (no backfill cost), only change the accessor
+      // and let `transitions` interpolate it on the GPU. This only re-runs
+      // once per decade tick (~23 times for a full playthrough), not per
+      // animation frame, so it stays cheap.
+      getElevation: (f) => {
+        const decade = f.properties.decade;
+        if (decade != null && decade > maxDecade) return 0;
+        return f.properties.height_m ?? 3;
+      },
       getFillColor: (f) => {
         const [r, g, b] = colorForDecade(f.properties.decade);
         return [r, g, b, 225];
       },
+      getLineColor: [15, 15, 20, 130],
+      lineWidthMinPixels: 1,
       pickable: true,
       onHover: (info) =>
         setHoverInfo(
@@ -112,13 +132,19 @@ export default function SkylineMap() {
             ? { x: info.x, y: info.y, object: info.object as Feature<Geometry, BuildingProps> }
             : null
         ),
-      // GPU-side filtering: only `filterRange`/`filterSoftRange` (two numbers)
-      // update per animation tick, not per-feature color/height -- this is
-      // what actually keeps the timelapse smooth at ~1M buildings.
+      updateTriggers: {
+        getElevation: [maxDecade],
+      },
+      transitions: {
+        getElevation: { duration: PLAY_STEP_MS * 3.5, easing: (t: number) => 1 - Math.pow(1 - t, 3) },
+      },
+      // GPU-side hard cutoff for far-future buildings -- cheaper fragment
+      // work at early decades since most of the dataset is filtered before
+      // it's even shaded. The actual "growth" look now comes from the
+      // elevation transition above, not from a filter fade.
       extensions: [dataFilter],
       getFilterValue: (f) => f.properties.decade ?? UNDATED_SENTINEL,
       filterRange: [UNDATED_SENTINEL, maxDecade],
-      filterSoftRange: [maxDecade - 10, maxDecade],
       material: {
         ambient: 0.4,
         diffuse: 0.85,
