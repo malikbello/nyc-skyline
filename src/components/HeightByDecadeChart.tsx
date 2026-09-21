@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { scaleLinear } from "d3-scale";
 import { line, curveMonotoneX } from "d3-shape";
 import appStats from "@/data/appStats.json";
-import { BOROUGH_COLORS, BOROUGHS } from "@/lib/boroughColors";
+import { boroughColors, BOROUGHS } from "@/lib/boroughColors";
 import { useTheme, themeClasses } from "@/lib/theme";
 import { SkylineSilhouette } from "./SkylineSilhouette";
 import { Reveal, ChapterMark } from "./Reveal";
@@ -20,6 +20,7 @@ const MARGIN = { top: 20, right: 20, bottom: 40, left: 34 };
 export default function HeightByDecadeChart() {
   const { theme } = useTheme();
   const t = themeClasses[theme];
+  const colors = boroughColors(theme);
 
   const { series, xScale, yScale, labelPositions } = useMemo(() => {
     const decades = Array.from(new Set(appStats.growth_by_decade.map((d) => d.decade))).sort(
@@ -102,7 +103,7 @@ export default function HeightByDecadeChart() {
                 stroke={t.gridLine}
                 strokeOpacity={theme === "light" ? 0.08 : 0.06}
               />
-              <text x={4} y={yScale(h) + 4} className={`text-[10px] ${theme === "light" ? "fill-black/40" : "fill-white/40"}`}>
+              <text x={4} y={yScale(h) + 4} className={`text-[10px] ${theme === "light" ? "fill-black/45" : "fill-white/55"}`}>
                 {h}m
               </text>
             </g>
@@ -113,7 +114,7 @@ export default function HeightByDecadeChart() {
               key={s.borough}
               d={lineGen(s.points) ?? ""}
               fill="none"
-              stroke={BOROUGH_COLORS[s.borough]}
+              stroke={colors[s.borough]}
               strokeWidth={s.borough === "Manhattan" ? 3.5 : 2}
               opacity={s.borough === "Manhattan" ? 1 : 0.7}
               initial={{ pathLength: 0 }}
@@ -130,7 +131,7 @@ export default function HeightByDecadeChart() {
               y={p.y - 8}
               textAnchor="end"
               className="text-[12px] font-medium"
-              fill={BOROUGH_COLORS[p.borough]}
+              fill={colors[p.borough]}
             >
               {p.borough}
             </text>
@@ -142,7 +143,7 @@ export default function HeightByDecadeChart() {
               x={xScale(decade)}
               y={HEIGHT - MARGIN.bottom + 20}
               textAnchor="middle"
-              className={`text-[11px] ${theme === "light" ? "fill-black/50" : "fill-white/50"}`}
+              className={`text-[11px] ${theme === "light" ? "fill-black/55" : "fill-white/50"}`}
             >
               {decade}s
             </text>

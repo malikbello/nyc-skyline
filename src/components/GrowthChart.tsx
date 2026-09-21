@@ -119,7 +119,7 @@ export default function GrowthChart() {
               x={p.cx}
               y={HEIGHT - MARGIN.bottom + 20}
               textAnchor="middle"
-              className={`text-[11px] ${theme === "light" ? "fill-black/40" : "fill-white/40"}`}
+              className={`text-[11px] ${theme === "light" ? "fill-black/55" : "fill-white/50"}`}
             >
               {p.decade}s
             </text>

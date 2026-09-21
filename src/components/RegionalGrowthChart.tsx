@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { scaleLinear } from "d3-scale";
 import { line, curveMonotoneX } from "d3-shape";
 import appStats from "@/data/appStats.json";
-import { BOROUGH_COLORS, BOROUGHS } from "@/lib/boroughColors";
+import { boroughColors, BOROUGHS } from "@/lib/boroughColors";
 import { Reveal, ChapterMark } from "./Reveal";
 import { useTheme, themeClasses } from "@/lib/theme";
 
@@ -16,6 +16,7 @@ const MARGIN = { top: 20, right: 100, bottom: 40, left: 20 };
 export default function RegionalGrowthChart() {
   const { theme } = useTheme();
   const t = themeClasses[theme];
+  const colors = boroughColors(theme);
 
   const { series, xScale, yScale } = useMemo(() => {
     const decades = Array.from(new Set(appStats.growth_by_decade.map((d) => d.decade))).sort(
@@ -84,7 +85,7 @@ export default function RegionalGrowthChart() {
               key={s.borough}
               d={lineGen(s.points) ?? ""}
               fill="none"
-              stroke={BOROUGH_COLORS[s.borough]}
+              stroke={colors[s.borough]}
               strokeWidth={2.5}
               initial={{ pathLength: 0 }}
               whileInView={{ pathLength: 1 }}
@@ -97,12 +98,12 @@ export default function RegionalGrowthChart() {
             const last = s.points[s.points.length - 1];
             return (
               <g key={s.borough}>
-                <circle cx={xScale(last.decade)} cy={yScale(last.cumulative)} r={3.5} fill={BOROUGH_COLORS[s.borough]} />
+                <circle cx={xScale(last.decade)} cy={yScale(last.cumulative)} r={3.5} fill={colors[s.borough]} />
                 <text
                   x={xScale(last.decade) + 8}
                   y={yScale(last.cumulative) + 4}
                   className="text-[12px] font-medium"
-                  fill={BOROUGH_COLORS[s.borough]}
+                  fill={colors[s.borough]}
                 >
                   {s.borough}
                 </text>
@@ -116,7 +117,7 @@ export default function RegionalGrowthChart() {
               x={xScale(decade)}
               y={HEIGHT - MARGIN.bottom + 20}
               textAnchor="middle"
-              className={`text-[11px] ${theme === "light" ? "fill-black/50" : "fill-white/50"}`}
+              className={`text-[11px] ${theme === "light" ? "fill-black/55" : "fill-white/50"}`}
             >
               {decade}s
             </text>

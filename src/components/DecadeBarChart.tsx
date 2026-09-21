@@ -91,7 +91,7 @@ export default function DecadeBarChart() {
                     x={barX + barWidth / 2}
                     y={HEIGHT - MARGIN.bottom + 18}
                     textAnchor="middle"
-                    className={`text-[10px] ${theme === "light" ? "fill-black/50" : "fill-white/50"}`}
+                    className={`text-[10px] ${theme === "light" ? "fill-black/55" : "fill-white/50"}`}
                   >
                     {b.label}
                   </text>

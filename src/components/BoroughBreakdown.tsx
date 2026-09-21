@@ -2,13 +2,14 @@
 
 import { motion } from "framer-motion";
 import appStats from "@/data/appStats.json";
-import { BOROUGH_COLORS } from "@/lib/boroughColors";
+import { boroughColors } from "@/lib/boroughColors";
 import { useTheme, themeClasses } from "@/lib/theme";
 import { Reveal, ChapterMark } from "./Reveal";
 
 export default function BoroughBreakdown() {
   const { theme } = useTheme();
   const t = themeClasses[theme];
+  const colors = boroughColors(theme);
   const maxCount = Math.max(...appStats.by_borough.map((b) => b.count));
   const sorted = [...appStats.by_borough].sort((a, b) => b.count - a.count);
 
@@ -39,7 +40,7 @@ export default function BoroughBreakdown() {
                 <div className={`h-3 w-full overflow-hidden rounded-full ${theme === "light" ? "bg-black/[0.06]" : "bg-white/[0.06]"}`}>
                   <motion.div
                     className="h-full rounded-full"
-                    style={{ backgroundColor: BOROUGH_COLORS[b.borough] }}
+                    style={{ backgroundColor: colors[b.borough] }}
                     initial={{ width: 0 }}
                     whileInView={{ width: `${(b.count / maxCount) * 100}%` }}
                     viewport={{ once: true, amount: 0.5 }}

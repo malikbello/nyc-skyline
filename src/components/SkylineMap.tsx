@@ -55,7 +55,7 @@ type BuildingProps = {
 
 type HoverState = { x: number; y: number; object: Feature<Geometry, BuildingProps> } | null;
 
-const PLAY_STEP_MS = 260; // moderately fast timelapse pace: ~23 decades in ~6s
+const PLAY_STEP_MS = 340; // moderately fast timelapse pace: ~23 decades in ~8s
 
 type BuildingFeature = Feature<Geometry, BuildingProps>;
 type BuildingLayer = MVTLayer<BuildingProps, DataFilterExtensionProps<BuildingFeature>>;
@@ -123,8 +123,15 @@ export default function SkylineMap() {
         const [r, g, b] = colorForDecade(f.properties.decade);
         return [r, g, b, 225];
       },
+      // No lineWidthMinPixels floor -- a forced minimum screen-pixel outline
+      // width stays visible even when a building's fill is sub-pixel at a
+      // zoomed-out view, which is what turned the whole map into a field of
+      // dots instead of solid color at low zoom. Letting the outline scale
+      // down with the fill (both in real-world units) keeps them consistent
+      // at every zoom level.
       getLineColor: [15, 15, 20, 130],
-      lineWidthMinPixels: 1,
+      getLineWidth: 0.5,
+      lineWidthUnits: "meters",
       pickable: true,
       onHover: (info) =>
         setHoverInfo(
@@ -180,7 +187,7 @@ export default function SkylineMap() {
             {Math.round(hoverInfo.object.properties.height_m ?? 0)}m tall
           </div>
           {hoverInfo.object.properties.bldgclass && (
-            <div className={theme === "light" ? "text-black/40" : "text-white/50"}>
+            <div className={theme === "light" ? "text-black/55" : "text-white/55"}>
               {hoverInfo.object.properties.bldgclass}
             </div>
           )}

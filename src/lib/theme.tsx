@@ -5,12 +5,12 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 type Theme = "light" | "dark";
 
 const ThemeContext = createContext<{ theme: Theme; toggleTheme: () => void }>({
-  theme: "light",
+  theme: "dark",
   toggleTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
     try {
@@ -46,8 +46,8 @@ export const themeClasses = {
     pageBg: "bg-[#fafaf9]",
     pageBgAlt: "bg-[#f1efe9]",
     text: "text-[#111113]",
-    textMuted: "text-black/50",
-    textFaint: "text-black/35",
+    textMuted: "text-black/65",
+    textFaint: "text-black/55",
     cardBg: "bg-black/[0.02]",
     cardBgHover: "hover:bg-black/[0.04]",
     border: "border-black/10",
@@ -61,7 +61,7 @@ export const themeClasses = {
     pageBgAlt: "bg-[#0a0d16]",
     text: "text-white",
     textMuted: "text-white/60",
-    textFaint: "text-white/40",
+    textFaint: "text-white/50",
     cardBg: "bg-white/[0.03]",
     cardBgHover: "hover:bg-white/[0.06]",
     border: "border-white/10",
