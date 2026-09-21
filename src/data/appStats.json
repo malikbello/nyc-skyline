@@ -1,0 +1,907 @@
+{
+  "total_buildings": 1083030,
+  "total_with_year": 1072922,
+  "tallest": {
+    "height_m": 472.4,
+    "borough": "Manhattan",
+    "year": 2020,
+    "bin": "1090180"
+  },
+  "oldest": {
+    "year": 1800,
+    "borough": "Brooklyn",
+    "bin": "3127990"
+  },
+  "avg_height_m": 8.5,
+  "median_height_m": 8.0,
+  "by_borough": [
+    {
+      "borough": "Brooklyn",
+      "count": 329971,
+      "avg_height_m": 8.7
+    },
+    {
+      "borough": "Bronx",
+      "count": 104242,
+      "avg_height_m": 8.9
+    },
+    {
+      "borough": "Manhattan",
+      "count": 45114,
+      "avg_height_m": 23.3
+    },
+    {
+      "borough": "Queens",
+      "count": 460864,
+      "avg_height_m": 7.0
+    },
+    {
+      "borough": "Staten Island",
+      "count": 142432,
+      "avg_height_m": 7.6
+    }
+  ],
+  "growth_by_decade": [
+    {
+      "decade": 1800,
+      "borough": "Brooklyn",
+      "count": 69,
+      "avg_height_m": 7.7
+    },
+    {
+      "decade": 1800,
+      "borough": "Bronx",
+      "count": 93,
+      "avg_height_m": 3.9
+    },
+    {
+      "decade": 1800,
+      "borough": "Manhattan",
+      "count": 36,
+      "avg_height_m": 16.5
+    },
+    {
+      "decade": 1800,
+      "borough": "Queens",
+      "count": 19,
+      "avg_height_m": 5.1
+    },
+    {
+      "decade": 1800,
+      "borough": "Staten Island",
+      "count": 10,
+      "avg_height_m": 6.8
+    },
+    {
+      "decade": 1810,
+      "borough": "Brooklyn",
+      "count": 2,
+      "avg_height_m": 10.7
+    },
+    {
+      "decade": 1810,
+      "borough": "Bronx",
+      "count": 2,
+      "avg_height_m": 7.3
+    },
+    {
+      "decade": 1810,
+      "borough": "Manhattan",
+      "count": 43,
+      "avg_height_m": 13.7
+    },
+    {
+      "decade": 1810,
+      "borough": "Staten Island",
+      "count": 1,
+      "avg_height_m": 6.7
+    },
+    {
+      "decade": 1820,
+      "borough": "Brooklyn",
+      "count": 40,
+      "avg_height_m": 12.5
+    },
+    {
+      "decade": 1820,
+      "borough": "Manhattan",
+      "count": 262,
+      "avg_height_m": 12.8
+    },
+    {
+      "decade": 1820,
+      "borough": "Staten Island",
+      "count": 1,
+      "avg_height_m": 6.4
+    },
+    {
+      "decade": 1830,
+      "borough": "Brooklyn",
+      "count": 109,
+      "avg_height_m": 13.7
+    },
+    {
+      "decade": 1830,
+      "borough": "Bronx",
+      "count": 1,
+      "avg_height_m": 13.4
+    },
+    {
+      "decade": 1830,
+      "borough": "Manhattan",
+      "count": 388,
+      "avg_height_m": 14.0
+    },
+    {
+      "decade": 1830,
+      "borough": "Queens",
+      "count": 2,
+      "avg_height_m": 11.7
+    },
+    {
+      "decade": 1830,
+      "borough": "Staten Island",
+      "count": 9,
+      "avg_height_m": 9.0
+    },
+    {
+      "decade": 1840,
+      "borough": "Brooklyn",
+      "count": 570,
+      "avg_height_m": 13.9
+    },
+    {
+      "decade": 1840,
+      "borough": "Bronx",
+      "count": 18,
+      "avg_height_m": 12.9
+    },
+    {
+      "decade": 1840,
+      "borough": "Manhattan",
+      "count": 696,
+      "avg_height_m": 14.3
+    },
+    {
+      "decade": 1840,
+      "borough": "Queens",
+      "count": 1,
+      "avg_height_m": 4.0
+    },
+    {
+      "decade": 1840,
+      "borough": "Staten Island",
+      "count": 17,
+      "avg_height_m": 9.9
+    },
+    {
+      "decade": 1850,
+      "borough": "Brooklyn",
+      "count": 1072,
+      "avg_height_m": 12.8
+    },
+    {
+      "decade": 1850,
+      "borough": "Bronx",
+      "count": 8,
+      "avg_height_m": 12.3
+    },
+    {
+      "decade": 1850,
+      "borough": "Manhattan",
+      "count": 771,
+      "avg_height_m": 16.2
+    },
+    {
+      "decade": 1850,
+      "borough": "Queens",
+      "count": 9,
+      "avg_height_m": 11.3
+    },
+    {
+      "decade": 1850,
+      "borough": "Staten Island",
+      "count": 11,
+      "avg_height_m": 9.9
+    },
+    {
+      "decade": 1860,
+      "borough": "Brooklyn",
+      "count": 928,
+      "avg_height_m": 12.7
+    },
+    {
+      "decade": 1860,
+      "borough": "Bronx",
+      "count": 15,
+      "avg_height_m": 10.7
+    },
+    {
+      "decade": 1860,
+      "borough": "Manhattan",
+      "count": 631,
+      "avg_height_m": 18.4
+    },
+    {
+      "decade": 1860,
+      "borough": "Queens",
+      "count": 3,
+      "avg_height_m": 18.1
+    },
+    {
+      "decade": 1860,
+      "borough": "Staten Island",
+      "count": 15,
+      "avg_height_m": 10.2
+    },
+    {
+      "decade": 1870,
+      "borough": "Brooklyn",
+      "count": 1937,
+      "avg_height_m": 12.7
+    },
+    {
+      "decade": 1870,
+      "borough": "Bronx",
+      "count": 14,
+      "avg_height_m": 9.1
+    },
+    {
+      "decade": 1870,
+      "borough": "Manhattan",
+      "count": 781,
+      "avg_height_m": 18.1
+    },
+    {
+      "decade": 1870,
+      "borough": "Queens",
+      "count": 104,
+      "avg_height_m": 8.9
+    },
+    {
+      "decade": 1870,
+      "borough": "Staten Island",
+      "count": 28,
+      "avg_height_m": 11.0
+    },
+    {
+      "decade": 1880,
+      "borough": "Brooklyn",
+      "count": 2875,
+      "avg_height_m": 12.9
+    },
+    {
+      "decade": 1880,
+      "borough": "Bronx",
+      "count": 71,
+      "avg_height_m": 11.5
+    },
+    {
+      "decade": 1880,
+      "borough": "Manhattan",
+      "count": 2168,
+      "avg_height_m": 17.7
+    },
+    {
+      "decade": 1880,
+      "borough": "Queens",
+      "count": 116,
+      "avg_height_m": 8.9
+    },
+    {
+      "decade": 1880,
+      "borough": "Staten Island",
+      "count": 30,
+      "avg_height_m": 11.9
+    },
+    {
+      "decade": 1890,
+      "borough": "Brooklyn",
+      "count": 19517,
+      "avg_height_m": 10.1
+    },
+    {
+      "decade": 1890,
+      "borough": "Bronx",
+      "count": 1674,
+      "avg_height_m": 8.8
+    },
+    {
+      "decade": 1890,
+      "borough": "Manhattan",
+      "count": 4023,
+      "avg_height_m": 17.6
+    },
+    {
+      "decade": 1890,
+      "borough": "Queens",
+      "count": 525,
+      "avg_height_m": 7.8
+    },
+    {
+      "decade": 1890,
+      "borough": "Staten Island",
+      "count": 2806,
+      "avg_height_m": 7.7
+    },
+    {
+      "decade": 1900,
+      "borough": "Brooklyn",
+      "count": 23978,
+      "avg_height_m": 9.8
+    },
+    {
+      "decade": 1900,
+      "borough": "Bronx",
+      "count": 5540,
+      "avg_height_m": 9.6
+    },
+    {
+      "decade": 1900,
+      "borough": "Manhattan",
+      "count": 8382,
+      "avg_height_m": 18.9
+    },
+    {
+      "decade": 1900,
+      "borough": "Queens",
+      "count": 7051,
+      "avg_height_m": 7.5
+    },
+    {
+      "decade": 1900,
+      "borough": "Staten Island",
+      "count": 3304,
+      "avg_height_m": 7.9
+    },
+    {
+      "decade": 1910,
+      "borough": "Brooklyn",
+      "count": 34431,
+      "avg_height_m": 8.8
+    },
+    {
+      "decade": 1910,
+      "borough": "Bronx",
+      "count": 8003,
+      "avg_height_m": 9.8
+    },
+    {
+      "decade": 1910,
+      "borough": "Manhattan",
+      "count": 8608,
+      "avg_height_m": 19.8
+    },
+    {
+      "decade": 1910,
+      "borough": "Queens",
+      "count": 22235,
+      "avg_height_m": 7.3
+    },
+    {
+      "decade": 1910,
+      "borough": "Staten Island",
+      "count": 5130,
+      "avg_height_m": 7.6
+    },
+    {
+      "decade": 1920,
+      "borough": "Brooklyn",
+      "count": 91138,
+      "avg_height_m": 7.6
+    },
+    {
+      "decade": 1920,
+      "borough": "Bronx",
+      "count": 24883,
+      "avg_height_m": 8.7
+    },
+    {
+      "decade": 1920,
+      "borough": "Manhattan",
+      "count": 7874,
+      "avg_height_m": 23.5
+    },
+    {
+      "decade": 1920,
+      "borough": "Queens",
+      "count": 124262,
+      "avg_height_m": 6.8
+    },
+    {
+      "decade": 1920,
+      "borough": "Staten Island",
+      "count": 13188,
+      "avg_height_m": 7.2
+    },
+    {
+      "decade": 1930,
+      "borough": "Brooklyn",
+      "count": 70370,
+      "avg_height_m": 8.1
+    },
+    {
+      "decade": 1930,
+      "borough": "Bronx",
+      "count": 16778,
+      "avg_height_m": 8.1
+    },
+    {
+      "decade": 1930,
+      "borough": "Manhattan",
+      "count": 1874,
+      "avg_height_m": 27.3
+    },
+    {
+      "decade": 1930,
+      "borough": "Queens",
+      "count": 96940,
+      "avg_height_m": 6.8
+    },
+    {
+      "decade": 1930,
+      "borough": "Staten Island",
+      "count": 11371,
+      "avg_height_m": 7.0
+    },
+    {
+      "decade": 1940,
+      "borough": "Brooklyn",
+      "count": 14389,
+      "avg_height_m": 7.3
+    },
+    {
+      "decade": 1940,
+      "borough": "Bronx",
+      "count": 7414,
+      "avg_height_m": 8.3
+    },
+    {
+      "decade": 1940,
+      "borough": "Manhattan",
+      "count": 911,
+      "avg_height_m": 21.6
+    },
+    {
+      "decade": 1940,
+      "borough": "Queens",
+      "count": 65434,
+      "avg_height_m": 6.5
+    },
+    {
+      "decade": 1940,
+      "borough": "Staten Island",
+      "count": 5407,
+      "avg_height_m": 6.7
+    },
+    {
+      "decade": 1950,
+      "borough": "Brooklyn",
+      "count": 13879,
+      "avg_height_m": 7.9
+    },
+    {
+      "decade": 1950,
+      "borough": "Bronx",
+      "count": 11247,
+      "avg_height_m": 8.3
+    },
+    {
+      "decade": 1950,
+      "borough": "Manhattan",
+      "count": 1141,
+      "avg_height_m": 30.0
+    },
+    {
+      "decade": 1950,
+      "borough": "Queens",
+      "count": 70408,
+      "avg_height_m": 6.7
+    },
+    {
+      "decade": 1950,
+      "borough": "Staten Island",
+      "count": 11127,
+      "avg_height_m": 6.2
+    },
+    {
+      "decade": 1960,
+      "borough": "Brooklyn",
+      "count": 17124,
+      "avg_height_m": 8.8
+    },
+    {
+      "decade": 1960,
+      "borough": "Bronx",
+      "count": 8993,
+      "avg_height_m": 9.6
+    },
+    {
+      "decade": 1960,
+      "borough": "Manhattan",
+      "count": 1325,
+      "avg_height_m": 38.6
+    },
+    {
+      "decade": 1960,
+      "borough": "Queens",
+      "count": 27958,
+      "avg_height_m": 7.7
+    },
+    {
+      "decade": 1960,
+      "borough": "Staten Island",
+      "count": 14345,
+      "avg_height_m": 6.7
+    },
+    {
+      "decade": 1970,
+      "borough": "Brooklyn",
+      "count": 4542,
+      "avg_height_m": 10.0
+    },
+    {
+      "decade": 1970,
+      "borough": "Bronx",
+      "count": 2827,
+      "avg_height_m": 10.1
+    },
+    {
+      "decade": 1970,
+      "borough": "Manhattan",
+      "count": 633,
+      "avg_height_m": 48.4
+    },
+    {
+      "decade": 1970,
+      "borough": "Queens",
+      "count": 8423,
+      "avg_height_m": 8.5
+    },
+    {
+      "decade": 1970,
+      "borough": "Staten Island",
+      "count": 19633,
+      "avg_height_m": 7.5
+    },
+    {
+      "decade": 1980,
+      "borough": "Brooklyn",
+      "count": 5440,
+      "avg_height_m": 8.5
+    },
+    {
+      "decade": 1980,
+      "borough": "Bronx",
+      "count": 2183,
+      "avg_height_m": 8.4
+    },
+    {
+      "decade": 1980,
+      "borough": "Manhattan",
+      "count": 766,
+      "avg_height_m": 52.6
+    },
+    {
+      "decade": 1980,
+      "borough": "Queens",
+      "count": 5725,
+      "avg_height_m": 8.9
+    },
+    {
+      "decade": 1980,
+      "borough": "Staten Island",
+      "count": 20611,
+      "avg_height_m": 8.3
+    },
+    {
+      "decade": 1990,
+      "borough": "Brooklyn",
+      "count": 6089,
+      "avg_height_m": 9.2
+    },
+    {
+      "decade": 1990,
+      "borough": "Bronx",
+      "count": 4506,
+      "avg_height_m": 8.8
+    },
+    {
+      "decade": 1990,
+      "borough": "Manhattan",
+      "count": 511,
+      "avg_height_m": 32.5
+    },
+    {
+      "decade": 1990,
+      "borough": "Queens",
+      "count": 5817,
+      "avg_height_m": 8.2
+    },
+    {
+      "decade": 1990,
+      "borough": "Staten Island",
+      "count": 15232,
+      "avg_height_m": 8.7
+    },
+    {
+      "decade": 2000,
+      "borough": "Brooklyn",
+      "count": 12183,
+      "avg_height_m": 11.1
+    },
+    {
+      "decade": 2000,
+      "borough": "Bronx",
+      "count": 6237,
+      "avg_height_m": 10.0
+    },
+    {
+      "decade": 2000,
+      "borough": "Manhattan",
+      "count": 1281,
+      "avg_height_m": 38.8
+    },
+    {
+      "decade": 2000,
+      "borough": "Queens",
+      "count": 15453,
+      "avg_height_m": 8.9
+    },
+    {
+      "decade": 2000,
+      "borough": "Staten Island",
+      "count": 12103,
+      "avg_height_m": 8.8
+    },
+    {
+      "decade": 2010,
+      "borough": "Brooklyn",
+      "count": 3848,
+      "avg_height_m": 14.6
+    },
+    {
+      "decade": 2010,
+      "borough": "Bronx",
+      "count": 1167,
+      "avg_height_m": 12.8
+    },
+    {
+      "decade": 2010,
+      "borough": "Manhattan",
+      "count": 789,
+      "avg_height_m": 47.8
+    },
+    {
+      "decade": 2010,
+      "borough": "Queens",
+      "count": 4967,
+      "avg_height_m": 10.4
+    },
+    {
+      "decade": 2010,
+      "borough": "Staten Island",
+      "count": 4063,
+      "avg_height_m": 8.9
+    },
+    {
+      "decade": 2020,
+      "borough": "Brooklyn",
+      "count": 2378,
+      "avg_height_m": 18.8
+    },
+    {
+      "decade": 2020,
+      "borough": "Bronx",
+      "count": 947,
+      "avg_height_m": 18.5
+    },
+    {
+      "decade": 2020,
+      "borough": "Manhattan",
+      "count": 400,
+      "avg_height_m": 56.9
+    },
+    {
+      "decade": 2020,
+      "borough": "Queens",
+      "count": 2573,
+      "avg_height_m": 11.7
+    },
+    {
+      "decade": 2020,
+      "borough": "Staten Island",
+      "count": 2332,
+      "avg_height_m": 8.1
+    }
+  ],
+  "cumulative_by_decade": [
+    {
+      "decade": 1800,
+      "cumulative_count": 227
+    },
+    {
+      "decade": 1810,
+      "cumulative_count": 275
+    },
+    {
+      "decade": 1820,
+      "cumulative_count": 578
+    },
+    {
+      "decade": 1830,
+      "cumulative_count": 1087
+    },
+    {
+      "decade": 1840,
+      "cumulative_count": 2389
+    },
+    {
+      "decade": 1850,
+      "cumulative_count": 4260
+    },
+    {
+      "decade": 1860,
+      "cumulative_count": 5852
+    },
+    {
+      "decade": 1870,
+      "cumulative_count": 8717
+    },
+    {
+      "decade": 1880,
+      "cumulative_count": 13981
+    },
+    {
+      "decade": 1890,
+      "cumulative_count": 42542
+    },
+    {
+      "decade": 1900,
+      "cumulative_count": 90810
+    },
+    {
+      "decade": 1910,
+      "cumulative_count": 169230
+    },
+    {
+      "decade": 1920,
+      "cumulative_count": 430590
+    },
+    {
+      "decade": 1930,
+      "cumulative_count": 627944
+    },
+    {
+      "decade": 1940,
+      "cumulative_count": 721501
+    },
+    {
+      "decade": 1950,
+      "cumulative_count": 829312
+    },
+    {
+      "decade": 1960,
+      "cumulative_count": 899065
+    },
+    {
+      "decade": 1970,
+      "cumulative_count": 935128
+    },
+    {
+      "decade": 1980,
+      "cumulative_count": 969855
+    },
+    {
+      "decade": 1990,
+      "cumulative_count": 1002016
+    },
+    {
+      "decade": 2000,
+      "cumulative_count": 1049281
+    },
+    {
+      "decade": 2010,
+      "cumulative_count": 1064200
+    },
+    {
+      "decade": 2020,
+      "cumulative_count": 1072922
+    }
+  ],
+  "count_by_decade": [
+    {
+      "decade": 1800,
+      "count": 227
+    },
+    {
+      "decade": 1810,
+      "count": 48
+    },
+    {
+      "decade": 1820,
+      "count": 303
+    },
+    {
+      "decade": 1830,
+      "count": 509
+    },
+    {
+      "decade": 1840,
+      "count": 1302
+    },
+    {
+      "decade": 1850,
+      "count": 1871
+    },
+    {
+      "decade": 1860,
+      "count": 1592
+    },
+    {
+      "decade": 1870,
+      "count": 2865
+    },
+    {
+      "decade": 1880,
+      "count": 5264
+    },
+    {
+      "decade": 1890,
+      "count": 28561
+    },
+    {
+      "decade": 1900,
+      "count": 48268
+    },
+    {
+      "decade": 1910,
+      "count": 78420
+    },
+    {
+      "decade": 1920,
+      "count": 261360
+    },
+    {
+      "decade": 1930,
+      "count": 197354
+    },
+    {
+      "decade": 1940,
+      "count": 93557
+    },
+    {
+      "decade": 1950,
+      "count": 107811
+    },
+    {
+      "decade": 1960,
+      "count": 69753
+    },
+    {
+      "decade": 1970,
+      "count": 36063
+    },
+    {
+      "decade": 1980,
+      "count": 34727
+    },
+    {
+      "decade": 1990,
+      "count": 32161
+    },
+    {
+      "decade": 2000,
+      "count": 47265
+    },
+    {
+      "decade": 2010,
+      "count": 14919
+    },
+    {
+      "decade": 2020,
+      "count": 8722
+    }
+  ],
+  "undated_count": 10108
+}

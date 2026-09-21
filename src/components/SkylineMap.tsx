@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Map, useControl, NavigationControl } from "react-map-gl/maplibre";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { MVTLayer } from "@deck.gl/geo-layers";
 import type { Feature, Geometry } from "geojson";
+import { Play, Pause, RotateCcw } from "lucide-react";
+import { colorForDecade, gradientCss, MIN_DECADE, MAX_DECADE } from "@/lib/decadeColor";
+import { useTheme, themeClasses } from "@/lib/theme";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 type BuildingProps = {
@@ -19,25 +22,9 @@ type BuildingProps = {
   borough?: string;
 };
 
-const DECADE_STOPS: [number, [number, number, number]][] = [
-  [1800, [40, 40, 90]],
-  [1900, [60, 90, 150]],
-  [1920, [80, 130, 160]],
-  [1940, [110, 160, 130]],
-  [1960, [170, 170, 80]],
-  [1980, [220, 140, 70]],
-  [2000, [235, 100, 90]],
-  [2020, [250, 60, 110]],
-];
+type HoverState = { x: number; y: number; object: Feature<Geometry, BuildingProps> } | null;
 
-function colorForDecade(decade: number | null | undefined): [number, number, number] {
-  if (decade === null || decade === undefined || Number.isNaN(decade)) return [110, 110, 110];
-  let match = DECADE_STOPS[0][1];
-  for (const [d, color] of DECADE_STOPS) {
-    if (decade >= d) match = color;
-  }
-  return match;
-}
+const PLAY_STEP_MS = 220; // fast enough to feel like a "growth" animation, not a slog
 
 function DeckGLOverlay(props: { layers: MVTLayer<BuildingProps>[] }) {
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
@@ -45,11 +32,39 @@ function DeckGLOverlay(props: { layers: MVTLayer<BuildingProps>[] }) {
   return null;
 }
 
-type HoverState = { x: number; y: number; object: Feature<Geometry, BuildingProps> } | null;
-
 export default function SkylineMap() {
-  const [maxDecade, setMaxDecade] = useState(2020);
+  const { theme } = useTheme();
+  const t = themeClasses[theme];
+  const [maxDecade, setMaxDecade] = useState(MAX_DECADE);
   const [hoverInfo, setHoverInfo] = useState<HoverState>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    intervalRef.current = setInterval(() => {
+      setMaxDecade((d) => {
+        if (d >= MAX_DECADE) {
+          setIsPlaying(false);
+          return d;
+        }
+        return d + 10;
+      });
+    }, PLAY_STEP_MS);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isPlaying]);
+
+  const handlePlay = () => {
+    if (maxDecade >= MAX_DECADE) setMaxDecade(MIN_DECADE);
+    setIsPlaying(true);
+  };
+
+  const handleReset = () => {
+    setIsPlaying(false);
+    setMaxDecade(MIN_DECADE);
+  };
 
   const layers = [
     new MVTLayer<BuildingProps>({
@@ -67,7 +82,7 @@ export default function SkylineMap() {
         const decade = f.properties.decade;
         if (decade != null && decade > maxDecade) return [0, 0, 0, 0];
         const [r, g, b] = colorForDecade(decade);
-        return [r, g, b, 220];
+        return [r, g, b, 225];
       },
       pickable: true,
       onHover: (info) =>
@@ -80,50 +95,120 @@ export default function SkylineMap() {
         getElevation: [maxDecade],
         getFillColor: [maxDecade],
       },
+      transitions: {
+        getElevation: PLAY_STEP_MS * 0.9,
+        getFillColor: PLAY_STEP_MS * 0.9,
+      },
       material: {
-        ambient: 0.3,
-        diffuse: 0.6,
-        shininess: 32,
-        specularColor: [60, 64, 70],
+        ambient: 0.35,
+        diffuse: 0.7,
+        shininess: 40,
+        specularColor: [80, 84, 90],
       },
     }),
   ];
 
   return (
-    <div className="relative h-screen w-screen">
+    <div className={`relative h-screen w-full ${t.pageBg}`}>
       <Map
-        initialViewState={{ longitude: -73.98, latitude: 40.75, zoom: 11, pitch: 45, bearing: -10 }}
-        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-nolabels/style.json"
+        initialViewState={{ longitude: -73.98, latitude: 40.75, zoom: 11, pitch: 50, bearing: -12 }}
+        mapStyle={t.basemap}
       >
-        <NavigationControl position="top-left" visualizePitch />
+        <NavigationControl position="top-right" visualizePitch />
         <DeckGLOverlay layers={layers} />
       </Map>
 
       {hoverInfo?.object && (
         <div
-          className="pointer-events-none absolute z-10 rounded bg-black/80 px-3 py-2 text-xs text-white"
-          style={{ left: (hoverInfo.x ?? 0) + 12, top: (hoverInfo.y ?? 0) + 12 }}
+          className={`pointer-events-none absolute z-20 rounded-xl border px-4 py-3 text-xs shadow-2xl backdrop-blur-md ${
+            theme === "light"
+              ? "border-black/10 bg-white/90 text-black"
+              : "border-white/10 bg-[#0b0e16]/90 text-white"
+          }`}
+          style={{ left: (hoverInfo.x ?? 0) + 14, top: (hoverInfo.y ?? 0) + 14 }}
         >
-          <div>Built: {hoverInfo.object.properties.construction_year ?? "unknown"}</div>
-          <div>Height: {Math.round(hoverInfo.object.properties.height_m ?? 0)}m</div>
-          <div>{hoverInfo.object.properties.bldgclass ?? ""}</div>
+          <div className="mb-1 text-sm font-semibold tracking-tight">
+            {hoverInfo.object.properties.construction_year ?? "Year unknown"}
+          </div>
+          <div className={theme === "light" ? "text-black/60" : "text-white/70"}>
+            {Math.round(hoverInfo.object.properties.height_m ?? 0)}m tall
+          </div>
+          {hoverInfo.object.properties.bldgclass && (
+            <div className={theme === "light" ? "text-black/40" : "text-white/50"}>
+              {hoverInfo.object.properties.bldgclass}
+            </div>
+          )}
         </div>
       )}
 
-      <div className="absolute bottom-6 left-1/2 z-10 w-[min(90vw,600px)] -translate-x-1/2 rounded-lg bg-black/70 p-4 text-white backdrop-blur">
-        <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="font-semibold">NYC Skyline Growth</span>
-          <span>{maxDecade}s</span>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center pt-6">
+        <div
+          className={`pointer-events-auto rounded-full border px-5 py-2 text-sm font-medium tracking-tight backdrop-blur-md ${
+            theme === "light"
+              ? "border-black/10 bg-white/60 text-black/90"
+              : "border-white/10 bg-black/40 text-white/90"
+          }`}
+        >
+          NYC Skyline Growth, 1800 &ndash; 2020
         </div>
+      </div>
+
+      <div
+        className={`absolute bottom-8 left-1/2 z-20 w-[min(92vw,720px)] -translate-x-1/2 rounded-2xl border p-5 shadow-2xl backdrop-blur-xl ${
+          theme === "light" ? "border-black/10 bg-white/85 text-black" : "border-white/10 bg-[#0b0e16]/85 text-white"
+        }`}
+      >
+        <div className="mb-3 flex items-end justify-between">
+          <div>
+            <div className={`text-[11px] font-medium uppercase tracking-wider ${t.textFaint}`}>
+              Showing buildings through
+            </div>
+            <div className="text-3xl font-semibold tabular-nums tracking-tight">{maxDecade}s</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleReset}
+              className={`flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                theme === "light"
+                  ? "border-black/10 bg-black/5 text-black/60 hover:bg-black/10 hover:text-black"
+                  : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+              }`}
+              aria-label="Reset"
+            >
+              <RotateCcw size={15} />
+            </button>
+            <button
+              onClick={() => (isPlaying ? setIsPlaying(false) : handlePlay())}
+              className={`flex h-11 w-11 items-center justify-center rounded-full transition ${
+                theme === "light" ? "bg-black text-white hover:bg-black/85" : "bg-white text-black hover:bg-white/90"
+              }`}
+              aria-label={isPlaying ? "Pause" : "Play"}
+            >
+              {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
+            </button>
+          </div>
+        </div>
+
         <input
           type="range"
-          min={1800}
-          max={2020}
+          min={MIN_DECADE}
+          max={MAX_DECADE}
           step={10}
           value={maxDecade}
-          onChange={(e) => setMaxDecade(Number(e.target.value))}
-          className="w-full"
+          onChange={(e) => {
+            setIsPlaying(false);
+            setMaxDecade(Number(e.target.value));
+          }}
+          className="skyline-slider w-full"
         />
+
+        <div className="mt-3 flex items-center gap-3">
+          <div className="h-2 flex-1 rounded-full" style={{ background: gradientCss() }} />
+        </div>
+        <div className={`mt-1 flex justify-between text-[10px] ${t.textFaint}`}>
+          <span>{MIN_DECADE}s</span>
+          <span>{MAX_DECADE}s</span>
+        </div>
       </div>
     </div>
   );
