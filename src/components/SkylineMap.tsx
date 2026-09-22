@@ -5,8 +5,7 @@ import { Map, useControl, NavigationControl } from "react-map-gl/maplibre";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { MVTLayer } from "@deck.gl/geo-layers";
 import { DataFilterExtension, type DataFilterExtensionProps } from "@deck.gl/extensions";
-import { LightingEffect, AmbientLight, DirectionalLight, PostProcessEffect, type Effect } from "@deck.gl/core";
-import { vignette, toneMapping } from "@luma.gl/effects";
+import { LightingEffect, AmbientLight, DirectionalLight, type Effect } from "@deck.gl/core";
 import type { Feature, Geometry } from "geojson";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { colorForDecade, gradientCss, MIN_DECADE, MAX_DECADE } from "@/lib/decadeColor";
@@ -24,15 +23,17 @@ const sunLight = new DirectionalLight({
 });
 const lightingEffect = new LightingEffect({ ambientLight, sunLight });
 
-// Screen-space post-processing: cost scales with screen resolution, not
-// feature count, so this is safe to layer on top of ~1M buildings. A subtle
-// vignette and filmic tone-mapping is what separates a "designed" scene from
-// a raw WebGL default -- confirmed via research into how polished deck.gl/
-// MapLibre city scenes are actually built.
-const vignetteEffect = new PostProcessEffect(vignette, { radius: 0.6, amount: 0.35 });
-const toneMappingEffect = new PostProcessEffect(toneMapping, { exposure: 1.1, maximumLuminance: 1.2 });
-
-const mapEffects: Effect[] = [lightingEffect, vignetteEffect, toneMappingEffect];
+// Post-process vignette/tone-mapping (@luma.gl/effects) was tried here and
+// pulled back out -- a QA pass found WebGL uniform-block reflection failures
+// for gouraudMaterialUniforms/dataFilterUniforms/lightingUniforms (mismatched
+// std140 layout for lights[0].color) starting around when this was added,
+// alongside buildings rendering as a flat uniform color regardless of decade.
+// Root cause of the flat-color issue turned out to be the decade gradient's
+// own low-contrast early stops (see decadeColor.ts), not this -- but with the
+// uniform failures unconfirmed as harmless and no way to visually verify the
+// post-process passes were doing anything correct, removing the least-tested
+// addition first is the safer move.
+const mapEffects: Effect[] = [lightingEffect];
 
 const dataFilter = new DataFilterExtension({ filterSize: 1 });
 
@@ -72,22 +73,41 @@ export default function SkylineMap() {
   const [maxDecade, setMaxDecade] = useState(MAX_DECADE);
   const [hoverInfo, setHoverInfo] = useState<HoverState>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const playStartRef = useRef<number>(0);
+  const startDecadeRef = useRef<number>(MIN_DECADE);
 
+  // Wall-clock-driven, not a fixed-count setInterval: computes the target
+  // decade from actual elapsed time each frame. A setInterval-per-step
+  // approach compounds delay if any single tick's work (recomputing
+  // getElevation across ~1M features) takes longer than the interval --
+  // confirmed happening in practice (measured ~17-19s actual vs. the ~8s
+  // this is tuned for). This way, if a frame falls behind, the next check
+  // jumps straight to the correct decade for the current time instead of
+  // queuing up compounding delay, so total duration stays close to intended
+  // even if individual steps occasionally look uneven under load.
   useEffect(() => {
     if (!isPlaying) return;
-    intervalRef.current = setInterval(() => {
-      setMaxDecade((d) => {
-        if (d >= MAX_DECADE) {
-          setIsPlaying(false);
-          return d;
-        }
-        return d + 10;
-      });
-    }, PLAY_STEP_MS);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+    playStartRef.current = performance.now();
+    startDecadeRef.current = maxDecade >= MAX_DECADE ? MIN_DECADE : maxDecade;
+
+    const tick = () => {
+      const elapsed = performance.now() - playStartRef.current;
+      const stepsElapsed = Math.floor(elapsed / PLAY_STEP_MS);
+      const target = Math.min(MAX_DECADE, startDecadeRef.current + stepsElapsed * 10);
+      setMaxDecade((prev) => (prev === target ? prev : target));
+      if (target >= MAX_DECADE) {
+        setIsPlaying(false);
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
     };
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying]);
 
   const handlePlay = () => {
@@ -120,7 +140,7 @@ export default function SkylineMap() {
         return f.properties.height_m ?? 3;
       },
       getFillColor: (f) => {
-        const [r, g, b] = colorForDecade(f.properties.decade);
+        const [r, g, b] = colorForDecade(f.properties.decade, theme);
         return [r, g, b, 225];
       },
       // No lineWidthMinPixels floor -- a forced minimum screen-pixel outline
@@ -141,9 +161,15 @@ export default function SkylineMap() {
         ),
       updateTriggers: {
         getElevation: [maxDecade],
+        getFillColor: [theme],
       },
       transitions: {
-        getElevation: { duration: PLAY_STEP_MS * 3.5, easing: (t: number) => 1 - Math.pow(1 - t, 3) },
+        // Was 3.5x the step duration, which meant several decades' worth of
+        // transitions were always mid-flight simultaneously -- contributed
+        // to both the sluggish overall feel and made per-step timing harder
+        // to reason about. Kept just above the step so growth still reads as
+        // a continuous ease rather than a hard pop, without stacking deeply.
+        getElevation: { duration: PLAY_STEP_MS * 1.3, easing: (t: number) => 1 - Math.pow(1 - t, 3) },
       },
       // GPU-side hard cutoff for far-future buildings -- cheaper fragment
       // work at early decades since most of the dataset is filtered before
@@ -188,7 +214,7 @@ export default function SkylineMap() {
           </div>
           {hoverInfo.object.properties.bldgclass && (
             <div className={theme === "light" ? "text-black/55" : "text-white/55"}>
-              {hoverInfo.object.properties.bldgclass}
+              Building class: {hoverInfo.object.properties.bldgclass}
             </div>
           )}
         </div>
@@ -256,7 +282,7 @@ export default function SkylineMap() {
         />
 
         <div className="mt-3 flex items-center gap-3">
-          <div className="h-2 flex-1 rounded-full" style={{ background: gradientCss() }} />
+          <div className="h-2 flex-1 rounded-full" style={{ background: gradientCss(theme) }} />
         </div>
         <div className={`mt-1 flex justify-between text-[10px] ${t.textFaint}`}>
           <span>{MIN_DECADE}s</span>

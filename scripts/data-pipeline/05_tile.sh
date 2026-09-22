@@ -8,6 +8,16 @@
 # built-in equivalent of blockandpaper.com's low-zoom grid-cell aggregation --
 # without them, ~1M building polygons at low zoom would be unreadable and slow.
 # --extend-zooms-if-still-dropping keeps full detail at high zoom where it matters.
+#
+# --maximum-tile-bytes raised from tippecanoe's 500KB default to 5MB: the
+# first run's build log showed tiles as low as zoom 11 being forced to keep
+# only ~10-14% of features to fit under the default cap -- a QA pass on the
+# app confirmed the result: even the default map view looked like a sparse
+# scatter of dots rather than a filled skyline. A generous per-tile byte
+# budget means --drop-densest-as-needed only has to kick in at the very
+# lowest zooms (9-10, where the whole city genuinely can't fit either way),
+# not from zoom 11 up. Expect a noticeably larger .pmtiles file as a result --
+# that's the correct tradeoff here, not a regression.
 set -euo pipefail
 
 DATA_DIR="${DATA_DIR:-$(dirname "$0")/../../data}"
@@ -19,6 +29,7 @@ tippecanoe -o "$OUT_PATH" \
   --name="NYC Buildings" \
   --layer=buildings \
   --minimum-zoom=9 --maximum-zoom=16 \
+  --maximum-tile-bytes=5000000 \
   --coalesce-densest-as-needed \
   --extend-zooms-if-still-dropping \
   --drop-densest-as-needed \

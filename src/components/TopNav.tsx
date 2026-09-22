@@ -11,7 +11,7 @@ export default function TopNav() {
   return (
     <header
       className={`sticky top-0 z-40 border-b backdrop-blur-xl ${
-        theme === "light" ? "border-black/10 bg-white/70" : "border-white/10 bg-[#05070c]/70"
+        theme === "light" ? "border-black/10 bg-white/95" : "border-white/10 bg-[#05070c]/95"
       }`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">

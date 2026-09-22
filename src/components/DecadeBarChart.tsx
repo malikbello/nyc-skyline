@@ -72,7 +72,7 @@ export default function DecadeBarChart() {
             const barWidth = xScale.bandwidth();
             const barY = yScale(b.count);
             const barHeight = HEIGHT - MARGIN.bottom - barY;
-            const [r, g, bl] = b.decade !== null ? colorForDecade(b.decade) : [140, 140, 150];
+            const [r, g, bl] = b.decade !== null ? colorForDecade(b.decade, theme) : [140, 140, 150];
 
             return (
               <g key={b.label}>
