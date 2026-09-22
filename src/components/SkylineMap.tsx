@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Map, useControl, NavigationControl } from "react-map-gl/maplibre";
+import { Map, useControl, NavigationControl, type MapRef } from "react-map-gl/maplibre";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { MVTLayer } from "@deck.gl/geo-layers";
 import { DataFilterExtension, type DataFilterExtensionProps } from "@deck.gl/extensions";
@@ -35,12 +35,27 @@ const lightingEffect = new LightingEffect({ ambientLight, sunLight });
 // addition first is the safer move.
 const mapEffects: Effect[] = [lightingEffect];
 
-const dataFilter = new DataFilterExtension({ filterSize: 1 });
+// filterSize handles the decade range, categorySize handles the borough
+// selector below -- both run together in the same GPU pass, a feature only
+// renders if it passes both.
+const dataFilter = new DataFilterExtension({ filterSize: 1, categorySize: 1 });
 
 // Everything with no known year is treated as always-present rather than
 // hidden -- we don't know when it was built, so it shouldn't be made to
 // vanish from an arbitrary point in the timeline.
 const UNDATED_SENTINEL = MIN_DECADE - 10;
+
+// Tile data uses NYC's own 2-letter borough codes (confirmed via the source
+// data profiling), not full names.
+const BOROUGHS = [
+  { code: "MN", name: "Manhattan", center: [-73.9712, 40.7831] as [number, number], zoom: 12.3 },
+  { code: "BK", name: "Brooklyn", center: [-73.9442, 40.6782] as [number, number], zoom: 11.3 },
+  { code: "QN", name: "Queens", center: [-73.7949, 40.7282] as [number, number], zoom: 11 },
+  { code: "BX", name: "Bronx", center: [-73.8648, 40.8448] as [number, number], zoom: 11.5 },
+  { code: "SI", name: "Staten Island", center: [-74.1502, 40.5795] as [number, number], zoom: 11.2 },
+];
+const ALL_BOROUGH_CODES = BOROUGHS.map((b) => b.code);
+const CITYWIDE_VIEW: [number, number] = [-73.98, 40.75];
 
 type BuildingProps = {
   doitt_id?: string;
@@ -56,7 +71,7 @@ type BuildingProps = {
 
 type HoverState = { x: number; y: number; object: Feature<Geometry, BuildingProps> } | null;
 
-const PLAY_STEP_MS = 340; // moderately fast timelapse pace: ~23 decades in ~8s
+const PLAY_STEP_MS = 480; // slowed from 340ms -- reads more like a real timelapse, less like a slideshow
 
 type BuildingFeature = Feature<Geometry, BuildingProps>;
 type BuildingLayer = MVTLayer<BuildingProps, DataFilterExtensionProps<BuildingFeature>>;
@@ -73,9 +88,23 @@ export default function SkylineMap() {
   const [maxDecade, setMaxDecade] = useState(MAX_DECADE);
   const [hoverInfo, setHoverInfo] = useState<HoverState>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedBorough, setSelectedBorough] = useState<string | null>(null);
   const rafRef = useRef<number | null>(null);
   const playStartRef = useRef<number>(0);
   const startDecadeRef = useRef<number>(MIN_DECADE);
+  const mapRef = useRef<MapRef>(null);
+
+  const flyToBorough = (code: string | null) => {
+    setSelectedBorough(code);
+    const map = mapRef.current;
+    if (!map) return;
+    if (code === null) {
+      map.flyTo({ center: CITYWIDE_VIEW, zoom: 11.5, duration: 2000 });
+      return;
+    }
+    const borough = BOROUGHS.find((b) => b.code === code);
+    if (borough) map.flyTo({ center: borough.center, zoom: borough.zoom, duration: 2000 });
+  };
 
   // Wall-clock-driven, not a fixed-count setInterval: computes the target
   // decade from actual elapsed time each frame. A setInterval-per-step
@@ -178,6 +207,8 @@ export default function SkylineMap() {
       extensions: [dataFilter],
       getFilterValue: (f) => f.properties.decade ?? UNDATED_SENTINEL,
       filterRange: [UNDATED_SENTINEL, maxDecade],
+      getFilterCategory: (f) => f.properties.borough ?? "",
+      filterCategories: selectedBorough ? [selectedBorough] : ALL_BOROUGH_CODES,
       material: {
         ambient: 0.4,
         diffuse: 0.85,
@@ -190,12 +221,47 @@ export default function SkylineMap() {
   return (
     <div className={`relative h-screen w-full ${t.pageBg}`}>
       <Map
+        ref={mapRef}
         initialViewState={{ longitude: -73.98, latitude: 40.75, zoom: 11.5, pitch: 58, bearing: -14 }}
         mapStyle={t.basemap}
       >
         <NavigationControl position="top-right" visualizePitch />
         <DeckGLOverlay layers={layers} effects={mapEffects} />
       </Map>
+
+      <div className="absolute left-5 top-20 z-10 flex flex-col gap-1.5">
+        <button
+          onClick={() => flyToBorough(null)}
+          className={`rounded-full border px-3.5 py-1.5 text-left text-xs font-medium backdrop-blur-md transition ${
+            selectedBorough === null
+              ? theme === "light"
+                ? "border-black bg-black text-white"
+                : "border-white bg-white text-black"
+              : theme === "light"
+              ? "border-black/10 bg-white/70 text-black/70 hover:bg-white/90"
+              : "border-white/10 bg-black/40 text-white/70 hover:bg-black/60"
+          }`}
+        >
+          All boroughs
+        </button>
+        {BOROUGHS.map((b) => (
+          <button
+            key={b.code}
+            onClick={() => flyToBorough(b.code)}
+            className={`rounded-full border px-3.5 py-1.5 text-left text-xs font-medium backdrop-blur-md transition ${
+              selectedBorough === b.code
+                ? theme === "light"
+                  ? "border-black bg-black text-white"
+                  : "border-white bg-white text-black"
+                : theme === "light"
+                ? "border-black/10 bg-white/70 text-black/70 hover:bg-white/90"
+                : "border-white/10 bg-black/40 text-white/70 hover:bg-black/60"
+            }`}
+          >
+            {b.name}
+          </button>
+        ))}
+      </div>
 
       {hoverInfo?.object && (
         <div
