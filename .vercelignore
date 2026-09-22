@@ -1,0 +1,4 @@
+/data/
+/original-notebook/
+/scripts/data-pipeline/*.geojson
+/scripts/data-pipeline/*.parquet

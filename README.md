@@ -9,7 +9,7 @@
 
 An interactive 3D map of every one of New York City's ~1.08 million buildings, colored and extruded by the decade each one was built, with a play button that animates the city's growth from 1800 to 2020 — plus the data story behind it, told in a series of charts computed from the same dataset.
 
-**Live:** _add the deployed URL here once it's live_
+**Live:** [nyc-skyline.vercel.app](https://nyc-skyline.vercel.app)
 
 ## Why this exists
 
