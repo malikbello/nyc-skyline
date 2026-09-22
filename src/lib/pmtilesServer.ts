@@ -1,34 +1,19 @@
-import { open, type FileHandle } from "node:fs/promises";
-import path from "node:path";
-import { PMTiles, type Source, type RangeResponse } from "pmtiles";
+import { PMTiles } from "pmtiles";
 
-const PMTILES_PATH =
-  process.env.NYC_PMTILES_PATH ?? path.join(process.cwd(), "data", "nyc_buildings.pmtiles");
-
-class NodeFileSource implements Source {
-  private handlePromise: Promise<FileHandle>;
-
-  constructor(private filePath: string) {
-    this.handlePromise = open(filePath, "r");
-  }
-
-  getKey(): string {
-    return this.filePath;
-  }
-
-  async getBytes(offset: number, length: number): Promise<RangeResponse> {
-    const handle = await this.handlePromise;
-    const buffer = Buffer.alloc(length);
-    await handle.read(buffer, 0, length, offset);
-    return { data: buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + length) };
-  }
-}
+// PMTiles' constructor uses its own built-in FetchSource (HTTP range
+// requests) automatically when given a URL string -- no local file, no
+// custom Source implementation needed. Falls back to a local file path via
+// NYC_PMTILES_PATH for anyone running the data pipeline without R2 set up
+// yet, but production reads from the public R2 URL.
+const PMTILES_URL =
+  process.env.NYC_PMTILES_URL ??
+  "https://pub-df6169769411408abaf5509658a923a1.r2.dev/nyc_buildings.pmtiles";
 
 let pmtilesInstance: PMTiles | null = null;
 
 function getPMTiles(): PMTiles {
   if (!pmtilesInstance) {
-    pmtilesInstance = new PMTiles(new NodeFileSource(PMTILES_PATH));
+    pmtilesInstance = new PMTiles(PMTILES_URL);
   }
   return pmtilesInstance;
 }
