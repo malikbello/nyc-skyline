@@ -57,13 +57,13 @@ export default function RegionalGrowthChart() {
     <section className={`${t.pageBg} px-6 py-20 ${t.text}`}>
       <div className="mx-auto max-w-5xl">
         <Reveal>
-          <ChapterMark n="04 — By region" />
+          <ChapterMark n="04: By region" />
           <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
             Not every borough grew the same way
           </h2>
           <p className="mb-10 max-w-2xl text-2xl font-semibold tracking-tight">
             Queens and Brooklyn built outward, decade after decade. Manhattan mostly stopped
-            adding buildings a century ago &mdash; and started building up instead.
+            adding buildings a century ago : and started building up instead.
           </p>
         </Reveal>
 

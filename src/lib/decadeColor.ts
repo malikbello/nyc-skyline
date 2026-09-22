@@ -18,12 +18,21 @@ const GRADIENT_STOPS_LIGHT = ["#4a3d8f", "#1f5f8f", "#1d7a6b", "#a97a12", "#b850
 
 const stopPositions = GRADIENT_STOPS_DARK.map((_, i) => i / (GRADIENT_STOPS_DARK.length - 1));
 
-function interpolateGradient(stops: string[], t: number): string {
+// interpolateHcl(a, b)(t) returns a CSS color STRING like "rgb(123, 111, 214)"
+// -- not a hex code. Treating that string as hex (the original bug here) parses
+// "rg" as a hex byte and produces NaN, which browsers render as an invalid/
+// black fill -- the real root cause of every "buildings/bars render as flat
+// black" symptom, on both the map and the bar chart, since the very first
+// version of this file. Parse the actual rgb(...) format instead of assuming hex.
+function interpolateGradient(stops: string[], t: number): [number, number, number] {
   const clamped = Math.max(0, Math.min(1, t));
   let i = 0;
   while (i < stopPositions.length - 2 && clamped > stopPositions[i + 1]) i++;
   const localT = (clamped - stopPositions[i]) / (stopPositions[i + 1] - stopPositions[i]);
-  return interpolateHcl(stops[i], stops[i + 1])(localT);
+  const rgbString = interpolateHcl(stops[i], stops[i + 1])(localT);
+  const match = rgbString.match(/rgb\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)\)/);
+  if (!match) return [128, 128, 128];
+  return [Math.round(Number(match[1])), Math.round(Number(match[2])), Math.round(Number(match[3]))];
 }
 
 const decadeToT = scaleLinear().domain([MIN_DECADE, MAX_DECADE]).clamp(true);
@@ -45,8 +54,7 @@ export function colorForDecade(
   if (decade === null || decade === undefined || Number.isNaN(decade)) {
     return theme === "light" ? [120, 120, 128] : [150, 150, 158];
   }
-  const hex = interpolateGradient(stops, decadeToT(decade));
-  return hexToRgb(hex);
+  return interpolateGradient(stops, decadeToT(decade));
 }
 
 export function gradientCss(theme: "light" | "dark" = "dark"): string {

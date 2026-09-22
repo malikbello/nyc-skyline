@@ -60,12 +60,12 @@ export default function GrowthChart() {
       />
       <div className="relative mx-auto max-w-5xl">
         <Reveal>
-          <ChapterMark n="02 — Growth" />
+          <ChapterMark n="02: Growth" />
           <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
             The skyline is getting taller
           </h2>
           <p className="mb-10 max-w-2xl text-2xl font-semibold tracking-tight">
-            From a handful of colonial-era structures to over a million buildings &mdash; New
+            From a handful of colonial-era structures to over a million buildings : New
             York&apos;s growth, decade by decade.
           </p>
         </Reveal>

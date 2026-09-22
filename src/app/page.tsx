@@ -45,7 +45,7 @@ export default function Home() {
           Every decade.
         </h1>
         <p className={`relative mt-6 max-w-lg text-lg ${t.textMuted}`}>
-          A million-building map of how New York grew up &mdash; joined from the city&apos;s
+          A million-building map of how New York grew up : joined from the city&apos;s
           own building footprints and tax lot records, rendered in 3D.
         </p>
       </section>
@@ -75,7 +75,7 @@ export default function Home() {
             Explore it yourself
           </h2>
           <p className="mx-auto max-w-xl text-2xl font-semibold tracking-tight">
-            Press play and watch the skyline grow &mdash; or drag the slider to any decade.
+            Press play and watch the skyline grow : or drag the slider to any decade.
           </p>
         </div>
         <SkylineMap />

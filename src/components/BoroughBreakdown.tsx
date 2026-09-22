@@ -17,12 +17,12 @@ export default function BoroughBreakdown() {
     <section className={`${t.pageBg} px-6 py-20 ${t.text}`}>
       <div className="mx-auto grid max-w-5xl gap-10 lg:grid-cols-[1fr_1.3fr] lg:items-center">
         <Reveal>
-          <ChapterMark n="06 — By the numbers" />
+          <ChapterMark n="06: By the numbers" />
           <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
             Borough by borough
           </h2>
           <p className="max-w-md text-2xl font-semibold tracking-tight">
-            Queens has the most buildings by far &mdash; Manhattan has the fewest, and by far the
+            Queens has the most buildings by far : Manhattan has the fewest, and by far the
             tallest.
           </p>
         </Reveal>

@@ -52,7 +52,7 @@ export default function HeightByDecadeChart() {
     // End-of-line labels: Brooklyn/Bronx/Queens/Staten Island all sit within
     // a few meters of each other, so placing each label at its exact y
     // collides them. Greedily push overlapping labels apart, top to bottom.
-    const MIN_LABEL_GAP = 16;
+    const MIN_LABEL_GAP = 22;
     const labelPositions = series
       .map((s) => {
         const last = s.points[s.points.length - 1];
@@ -82,12 +82,12 @@ export default function HeightByDecadeChart() {
       <SkylineSilhouette className={`pointer-events-none absolute inset-x-0 bottom-0 h-48 w-full ${t.silhouette}`} seed={22} />
       <div className="relative mx-auto max-w-5xl">
         <Reveal>
-          <ChapterMark n="05 — The insight" />
+          <ChapterMark n="05: The insight" />
           <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
             The real skyline story
           </h2>
           <p className="mb-10 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
-            Manhattan didn&apos;t just build more &mdash; it built up. Average building height by
+            Manhattan didn&apos;t just build more : it built up. Average building height by
             decade, by borough.
           </p>
         </Reveal>

@@ -44,7 +44,7 @@ export default function DecadeBarChart() {
     <section className={`${t.pageBg} px-6 py-20 ${t.text}`}>
       <div className="mx-auto max-w-5xl">
         <Reveal>
-          <ChapterMark n="03 — Distribution" />
+          <ChapterMark n="03: Distribution" />
           <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
             What&apos;s still standing
           </h2>

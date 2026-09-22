@@ -903,5 +903,99 @@
       "count": 8722
     }
   ],
-  "undated_count": 10108
+  "undated_count": 10108,
+  "avg_height_by_decade_citywide": [
+    {
+      "decade": 1800,
+      "avg_height_m": 7.3
+    },
+    {
+      "decade": 1810,
+      "avg_height_m": 13.2
+    },
+    {
+      "decade": 1820,
+      "avg_height_m": 12.7
+    },
+    {
+      "decade": 1830,
+      "avg_height_m": 13.9
+    },
+    {
+      "decade": 1840,
+      "avg_height_m": 14.0
+    },
+    {
+      "decade": 1850,
+      "avg_height_m": 14.2
+    },
+    {
+      "decade": 1860,
+      "avg_height_m": 14.9
+    },
+    {
+      "decade": 1870,
+      "avg_height_m": 14.0
+    },
+    {
+      "decade": 1880,
+      "avg_height_m": 14.8
+    },
+    {
+      "decade": 1890,
+      "avg_height_m": 10.8
+    },
+    {
+      "decade": 1900,
+      "avg_height_m": 10.9
+    },
+    {
+      "decade": 1910,
+      "avg_height_m": 9.6
+    },
+    {
+      "decade": 1920,
+      "avg_height_m": 7.8
+    },
+    {
+      "decade": 1930,
+      "avg_height_m": 7.6
+    },
+    {
+      "decade": 1940,
+      "avg_height_m": 6.9
+    },
+    {
+      "decade": 1950,
+      "avg_height_m": 7.2
+    },
+    {
+      "decade": 1960,
+      "avg_height_m": 8.6
+    },
+    {
+      "decade": 1970,
+      "avg_height_m": 9.0
+    },
+    {
+      "decade": 1980,
+      "avg_height_m": 9.4
+    },
+    {
+      "decade": 1990,
+      "avg_height_m": 9.1
+    },
+    {
+      "decade": 2000,
+      "avg_height_m": 10.4
+    },
+    {
+      "decade": 2010,
+      "avg_height_m": 13.2
+    },
+    {
+      "decade": 2020,
+      "avg_height_m": 15.7
+    }
+  ]
 }

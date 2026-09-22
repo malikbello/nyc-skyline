@@ -49,7 +49,7 @@ export default function StatsCards() {
       />
       <div className="relative mx-auto max-w-5xl">
         <Reveal>
-          <ChapterMark n="01 — Overview" />
+          <ChapterMark n="01: Overview" />
           <h2 className={`mb-2 text-sm font-medium uppercase tracking-widest ${t.textFaint}`}>
             The city, in numbers
           </h2>
