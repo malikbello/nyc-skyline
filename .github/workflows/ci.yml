@@ -1,0 +1,51 @@
+name: CI
+
+# Every change reaches main through a pull request (branch protection), and
+# a PR can only merge once these checks pass. Production is additionally
+# gated on Vercel's side: the `vercel-build` script lints before `next build`
+# (which type-checks), so a failing commit never replaces the live site.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint, typecheck, audit, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      # Production dependencies only, high/critical only: dev tooling and
+      # moderate findings are handled by Dependabot PRs, not by blocking.
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+  dependency-review:
+    # Blocks a PR that would add a dependency with a known high/critical
+    # vulnerability, before it ever reaches main.
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high

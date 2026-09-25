@@ -59,3 +59,14 @@ body {
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
   cursor: pointer;
 }
+
+/* Map zoom/compass controls sat under the fixed site header (~60px tall) and
+   only the compass peeked out -- push them clear of it, and make the
+   buttons a comfortable size to hit. */
+.maplibregl-ctrl-top-right {
+  margin-top: 68px;
+}
+.maplibregl-ctrl-group button {
+  width: 36px;
+  height: 36px;
+}

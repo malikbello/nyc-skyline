@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react";
 
 type Theme = "light" | "dark";
 
@@ -9,28 +9,45 @@ const ThemeContext = createContext<{ theme: Theme; toggleTheme: () => void }>({
   toggleTheme: () => {},
 });
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
+// The saved theme lives in localStorage, outside React. Reading it through
+// useSyncExternalStore (server snapshot "dark") avoids both a hydration
+// mismatch and the extra render of setting state from an effect on mount.
+// memoryTheme keeps the toggle working when storage is blocked.
+const STORAGE_KEY = "skyline-theme";
+const listeners = new Set<() => void>();
+let memoryTheme: Theme = "dark";
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("skyline-theme");
-      if (stored === "light" || stored === "dark") setTheme(stored);
-    } catch {
-      // localStorage unavailable -- keep default
-    }
-  }, []);
+function readTheme(): Theme {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === "light" || stored === "dark") return stored;
+  } catch {
+    // storage blocked -- fall through to the in-memory value
+  }
+  return memoryTheme;
+}
+
+function subscribe(onChange: () => void) {
+  listeners.add(onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const theme = useSyncExternalStore(subscribe, readTheme, () => "dark" as Theme);
 
   const toggleTheme = () => {
-    setTheme((prev) => {
-      const next = prev === "light" ? "dark" : "light";
-      try {
-        localStorage.setItem("skyline-theme", next);
-      } catch {
-        // ignore
-      }
-      return next;
-    });
+    const next: Theme = readTheme() === "light" ? "dark" : "light";
+    memoryTheme = next;
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // storage blocked -- memoryTheme still carries the change
+    }
+    listeners.forEach((l) => l());
   };
 
   return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;

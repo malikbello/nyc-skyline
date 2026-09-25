@@ -18,7 +18,7 @@ export default function GrowthChart() {
   const t = themeClasses[theme];
   const data = appStats.cumulative_by_decade;
 
-  const { linePath, areaPath, points, xScale, yScale } = useMemo(() => {
+  const { linePath, areaPath, points, yScale } = useMemo(() => {
     const decades = data.map((d) => d.decade);
     const counts = data.map((d) => d.cumulative_count);
 

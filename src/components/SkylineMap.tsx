@@ -10,6 +10,9 @@ import type { Feature, Geometry } from "geojson";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { colorForDecade, gradientCss, MIN_DECADE, MAX_DECADE } from "@/lib/decadeColor";
 import { useTheme, themeClasses } from "@/lib/theme";
+import MapEngageHint from "@/components/MapEngageHint";
+import { useMapEngage } from "@/lib/useMapEngage";
+import "@/lib/maplibreWorkerFix";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 // Plain ambient + directional light for real diffuse shading, without the
@@ -71,7 +74,9 @@ type BuildingProps = {
 
 type HoverState = { x: number; y: number; object: Feature<Geometry, BuildingProps> } | null;
 
-const PLAY_STEP_MS = 480; // slowed from 340ms -- reads more like a real timelapse, less like a slideshow
+// ~850ms per decade, ~20s for the full 1800->2020 run: slow enough to actually
+// watch each era fill in (was 480ms, ~11s, which read as a blur).
+const PLAY_STEP_MS = 850;
 
 type BuildingFeature = Feature<Geometry, BuildingProps>;
 type BuildingLayer = MVTLayer<BuildingProps, DataFilterExtensionProps<BuildingFeature>>;
@@ -93,6 +98,7 @@ export default function SkylineMap() {
   const playStartRef = useRef<number>(0);
   const startDecadeRef = useRef<number>(MIN_DECADE);
   const mapRef = useRef<MapRef>(null);
+  const { engaged, showHint, wrapperProps } = useMapEngage();
 
   const flyToBorough = (code: string | null) => {
     setSelectedBorough(code);
@@ -153,6 +159,11 @@ export default function SkylineMap() {
     new MVTLayer<BuildingProps, DataFilterExtensionProps<BuildingFeature>>({
       id: "nyc-buildings",
       data: "/api/tiles/{z}/{x}/{y}",
+      // Self-hosted instead of loaders.gl's default unpkg.com fetch: one less
+      // third-party connection before the first buildings, no unverified CDN
+      // code. Must match the installed @loaders.gl/mvt (4.5.2); recopy from
+      // node_modules/@loaders.gl/mvt/dist/ after upgrading deck.gl.
+      loadOptions: { mvt: { workerUrl: "/workers/mvt-worker.js" } },
       minZoom: 9,
       maxZoom: 16,
       extruded: true,
@@ -219,15 +230,17 @@ export default function SkylineMap() {
   ];
 
   return (
-    <div className={`relative h-screen w-full ${t.pageBg}`}>
+    <div className={`relative h-screen w-full ${t.pageBg}`} {...wrapperProps}>
       <Map
         ref={mapRef}
+        scrollZoom={engaged}
         initialViewState={{ longitude: -73.98, latitude: 40.75, zoom: 11.5, pitch: 58, bearing: -14 }}
         mapStyle={t.basemap}
       >
         <NavigationControl position="top-right" visualizePitch />
         <DeckGLOverlay layers={layers} effects={mapEffects} />
       </Map>
+      <MapEngageHint show={showHint} />
 
       <div className="absolute left-5 top-20 z-10 flex flex-col gap-1.5">
         <button
