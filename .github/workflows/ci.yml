@@ -49,3 +49,5 @@ jobs:
       - uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
+          # the dependency graph snapshot can lag a fresh push by a few minutes
+          retry-on-snapshot-warnings: true
