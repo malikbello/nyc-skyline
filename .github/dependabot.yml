@@ -10,6 +10,13 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # Held back until the lint toolchain supports them: typescript-eslint has no
+      # TS 7 support yet, and eslint-plugin-react breaks on ESLint 10.
+      - dependency-name: typescript
+        versions: [">=7"]
+      - dependency-name: eslint
+        versions: [">=10"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
